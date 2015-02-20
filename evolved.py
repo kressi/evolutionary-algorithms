@@ -16,6 +16,18 @@ class Individual:
         self.fnc_fitness    = fnc_fitness
         self.fnc_constraint = fnc_constraint
 
+    def evaluate(self):
+        """
+        Calculate new values and evaluate Individual with
+        fitness function and determine constraint.
+        """
+        self.calculate_integers()
+
+        self.fitness    = self.fnc_fitness(self.integers)
+        self.constraint = self.fnc_constraint(self.integers)
+
+        return {'Fitness': self.fitness, 'Constraint': self.constraint}
+
     def show(self):
         print(''.join(['Bin: ', self.bin_string,
                        ', ', str(zip(self.names, self.integers)),
@@ -47,19 +59,6 @@ class Individual:
             base *= 2
         return num
 
-    def evaluate(self):
-        """
-        Evaluate Individual with provided fitness function and
-        determine constraint.
-        """
-        if not self.integers:
-            self.calculate_integers()
-
-        self.fitness    = self.fnc_fitness(self.integers)
-        self.constraint = self.fnc_constraint(self.integers)
-
-        return {'Fitness': self.fitness, 'Constraint': self.constraint}
-
 
 def random_bin_string(length):
     bin_string = ''
@@ -83,6 +82,9 @@ def get_rank_based_selection(population, size=None, greatest_fitness_first=True)
         for i, sub_interval in enumerate(probability_interval):
             if rand <= sub_interval:
                 break
+        # selected individuals are copied into selection
+        # otherwise several items in selection would point
+        # to the same individual.
         selection.append(copy(sorted_population[i]))
 
     return selection
@@ -117,10 +119,15 @@ def mutate(bin_string, p=0.1):
     return ''.join(result)
 
 def next_generation(population):
+    """
+    creates next generation from a population
+    i)   current population is evaluated
+    ii)  individuals for reproduction are selected
+    iii) selected individuals are mutated and copulated
+    """
 
     # Evaluate individuals of population
     for ind in population:
-        ind.calculate_integers()
         [fitness, constraint] = ind.evaluate()
     
     # Rank based selection of individuals fullfilling constraint
