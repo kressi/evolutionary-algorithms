@@ -3,63 +3,65 @@ from math import pi, ceil, log
 
 class Individual:
     
-    def __init__(self, bin_string=None, properties={}):
+    def __init__(self, properties, bin_string=None):
 
         self.properties = properties
-        self.size = list(properties.values())
-        if not bin_string:
-            self.bin_string = self.random_bin_string(sum(self.size))
-        else:
-            self.bin_string = bin_string
-
-        self.property_reals = []
-
-        self.d          = 0
-        self.h          = 0
+        self.names      = list(properties.keys())
+        self.size       = list(properties.values())
+        self.bin_string = bin_string if bin_string else random_bin_string(sum(self.size))
+        self.integers   = []
         self.fitness    = 0
         self.constraint = 0
 
     def show(self):
         print(''.join(['Bin: ', self.bin_string,
-                       ', h:', str(self.h),
-                       ', d:', str(self.d),
-                       str(self.properties), 
+                       ', ', str(zip(self.names, self.integers)),
                        ', Fitness: ', str(self.fitness),
                        ', Constraint: ', str(self.constraint)]))
 
-    def random_bin_string(self, length):
-        bin_string = ''
-        for _ in range(length):
-            bin_string += str(randint(0,1))
-        return bin_string
+
+
+    def get_integers(self):
+        """
+        Split bin_string according to size of properties
+        and convert substrings to decimal numbers.
+        """
+        s0 = 0
+        for s1 in self.size:
+            self.integers.append(
+                self.bin_to_int(self.bin_string[s0:s0+s1])
+            )
+            s0 += s1
+
+        return self.integers
 
     def bin_to_int(self, bin_string):
         base = 1
         num = 0
-        for i in bin_string:
+        for i in bin_string[::-1]:
             num += base*int(i)
             base *= 2
         return num
 
-    def evaluate(self, fitness=(lambda d, h: pi*d**2/2 + pi*d*h),
-                       constraint=(lambda d, h: pi*d**2*h/4 >= 300) ):
+    def evaluate(self, fitness=(lambda reals: pi*reals[0]**2/2 + pi*reals[0]*reals[1]),
+                       constraint=(lambda reals: pi*reals[0]**2*reals[1]/4 >= 300) ):
         """
         Evaluate Individual with provided fitness function and
         determine constraint.
         """
+        if not self.integers:
+            self.get_integers()
 
-        self.d = self.bin_to_int(self.bin_string[:self.size[0]:-1])
-        self.h = self.bin_to_int(self.bin_string[self.size[0]::-1])
-
-        for s in self.size:
-            self.property_reals.append
-
-
-        self.fitness    = fitness(self.d, self.h)
-        self.constraint = constraint(self.d, self.h)
+        self.fitness    = fitness(self.integers)
+        self.constraint = constraint(self.integers)
 
         return {'Fitness': self.fitness, 'Constraint': self.constraint}
 
+def random_bin_string(length):
+    bin_string = ''
+    for _ in range(length):
+        bin_string += str(randint(0,1))
+    return bin_string
 
 def get_rank_based_selection(population):
 
@@ -114,7 +116,7 @@ def main():
     """
 
     SIZE_POPULATION = 30
-    properties_encoded = {
+    encoded_properties = {
         'diameter': 5,
         'height': 5
     }
@@ -122,10 +124,11 @@ def main():
     # create initial population
     population = []
     for _ in range(SIZE_POPULATION):
-        population.append(Individual(properties=properties_encoded))
+        population.append(Individual(properties=encoded_properties))
 
     # Evaluate individuals of population
     for ind in population:
+        integers = ind.get_integers()
         [fitness, constraint] = ind.evaluate()
 
     # Rank based selection
