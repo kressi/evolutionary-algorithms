@@ -1,9 +1,10 @@
 from random import randint, random
-from math import pi, ceil, log
+from math import pi, ceil, log, floor
 from copy import copy
 
 class Individual:
-    
+    """
+    """
     def __init__( self, properties, fnc_fitness, fnc_constraint, bin_string=None ):
 
         self.properties     = properties
@@ -28,13 +29,17 @@ class Individual:
 
         return {'Fitness': self.fitness, 'Constraint': self.constraint}
 
+    def get_bin_string(self):
+        return self.bin_string
+
+    def set_bin_string(self, bin_string):
+        self.bin_string = bin_string
+
     def show(self):
         print(''.join(['Bin: ', self.bin_string,
                        ', ', str(zip(self.names, self.integers)),
                        ', Fitness: ', str(self.fitness),
                        ', Constraint: ', str(self.constraint)]))
-
-
 
     def calculate_integers(self):
         """
@@ -60,11 +65,30 @@ class Individual:
         return num
 
 
-def random_bin_string(length):
-    bin_string = ''
-    for _ in range(length):
-        bin_string += str(randint(0,1))
-    return bin_string
+def next_generation(population):
+    """
+    creates next generation from a population
+    i)   current population is evaluated
+    ii)  individuals for reproduction are selected
+    iii) selected individuals are mutated and copulated
+    """
+
+    # Evaluate individuals of population
+    for ind in population:
+        [fitness, constraint] = ind.evaluate()
+    
+    # Rank based selection of individuals fullfilling constraint
+    selection = get_rank_based_selection( [ind for ind in population if ind.constraint],
+                                          size=len(population),
+                                          greatest_fitness_first = False )
+
+    # Mutate
+    for ind in selection:
+        ind.bin_string = mutate(ind.bin_string)
+
+    #selection = copulate_population(selection)
+
+    return selection
 
 def get_rank_based_selection(population, size=None, greatest_fitness_first=True):
 
@@ -101,10 +125,6 @@ def get_probability_interval(max_rank):
 
     return interval
 
-def singel_point_recombine(str1, str2):
-    point = randint(0,len(str1))
-    return [str1[:point]+str2[point:], str1[point:]+str2[:point]]
-
 def mutate(bin_string, p=0.1):
     """
     Function mutate inverts each bit of bin_string with
@@ -118,28 +138,40 @@ def mutate(bin_string, p=0.1):
 
     return ''.join(result)
 
-def next_generation(population):
+def copulate_population(population, p=1):
     """
-    creates next generation from a population
-    i)   current population is evaluated
-    ii)  individuals for reproduction are selected
-    iii) selected individuals are mutated and copulated
+    Split population in two groups, and mate individuals
+    from the first group with individuals from the
+    second group, giving two offsprings. They mate only
+    with probability p, unmated individuals will be moved 
+    to the new generation.
     """
+    group_size = int(floor(len(population)/2))
+    offsprings = []
+    for mother in range(group_size):
+        if random < p:
+            father = randint(group_size,len(population)-1)
+            children += singel_point_recombine( population[mother].get_bin_string(),
+                                                population[father].get_bin_string() )
+            population[mother].set_bin_string(children[0])
+            population[father].set_bin_string(children[1])
 
-    # Evaluate individuals of population
-    for ind in population:
-        [fitness, constraint] = ind.evaluate()
-    
-    # Rank based selection of individuals fullfilling constraint
-    selection = get_rank_based_selection( [ind for ind in population if ind.constraint],
-                                          size=len(population),
-                                          greatest_fitness_first = False )
+            offsprings.append(population[mother])
+            offsprings.append(population[father])
 
-    # Mutate
-    for ind in selection:
-        ind.bin_string = mutate(ind.bin_string)
+    return offsprings
 
-    return selection
+
+
+def singel_point_recombine(str1, str2):
+    point = randint(0,len(str1))
+    return [str1[:point]+str2[point:], str1[point:]+str2[:point]]
+
+def random_bin_string(length):
+    bin_string = ''
+    for _ in range(length):
+        bin_string += str(randint(0,1))
+    return bin_string
 
 def main():
 
@@ -158,7 +190,7 @@ def main():
                                       fnc_fitness=surface_cylinder,
                                       fnc_constraint=volume_cylinder_constraint ))
 
-    for _ in range(100):
+    for _ in range(5):
         population = next_generation(population)
 
         print('\nMutated')
