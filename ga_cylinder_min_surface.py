@@ -36,7 +36,8 @@ class CylinderPhenotype:
         ])
 
     def calculate_decimals(self):
-        [self.diameter, self.height] = property_values_from_genotype(self.genotype, self.sizes)
+        self.diameter = binary_to_real(self.genotype[:5])
+        self.height   = binary_to_real(self.genotype[5:])
         return [self.diameter, self.height]
 
     def evaluate(self):
@@ -49,13 +50,15 @@ class CylinderPhenotype:
 
 """Genetic algorithm methodologies
 """
-def initialize_population(size, properties):
+def initialize_population(size):
 
-    sizes_properties = properties.values()
-    length_genotype  = sum(sizes_properties)
     population = []
     for _ in range(size):
-        population.append(CylinderPhenotype(random_genotype(length_genotype)))
+        population.append(CylinderPhenotype(
+            # Random Genome
+            ''.join([str(randint(0,1)) for _ in range(10)])
+        ))
+
         population[-1].calculate_decimals()
         population[-1].evaluate()
 
@@ -75,22 +78,21 @@ def next_generation(population):
     return next_generation
 
 def select_phenotypes(population):
-    return get_rank_based_selection(population, greatest_fitness_first=False)
-
-def get_rank_based_selection(population, size=None, greatest_fitness_first=True):
-    """Stochastic universal sampling
+    """
+    Rank based selection
+    Stochastic universal sampling
     """
 
     # list, sorted by rank and filtered by constraint
     sorted_population = sorted( [creature for creature in population if creature.constraint],
                                 key=lambda ind: ind.fitness,
-                                reverse=greatest_fitness_first )
+                                reverse=True )
 
     # List with boundaries of interval for rank probability
     probability_interval = get_probability_interval(len(sorted_population))
 
     selection = []
-    for _ in range(size if size else len(population)):
+    for _ in range(len(population)):
         rand = random()
         for i, sub_interval in enumerate(probability_interval):
             if rand <= sub_interval:
@@ -152,47 +154,21 @@ def singel_point_recombine(gen1, gen2):
 
 """Encoding and Decoding
 """
-def random_genotype(length=10):
-    return ''.join([str(randint(0,1)) for _ in range(length)])
-
-def length_binary_encoded_interval(min=0, max=10, step=1):
-    return ceil(log((abs(max-min))/step, 2))
-
 def binary_to_real(bin_string, min=0, step=1):
     base = 1
     num = 0
     for i in bin_string[::-1]:
         num += base*int(i)
         base *= 2
-    return (num-min)*step
-
-def property_values_from_genotype(genotype, sizes=[5,5]):
-    """
-    Split binary representation (genotype) according to size
-    of each property, and compute decimal value.
-    """
-    property_values = []
-
-    s0 = 0
-    for s1 in sizes:
-        property_values.append(
-            binary_to_real(genotype[s0:s0+s1])
-        )
-        s0 += s1
-
-    return property_values
+    return num
 
 
 def main():
 
     SIZE_POPULATION = 30
     NUMBER_GENERATIONS = 5
-    PROPERTIES = {
-        'Height': length_binary_encoded_interval(max=31),
-        'Diameter': length_binary_encoded_interval(max=31)
-    }
 
-    population = initialize_population(size=SIZE_POPULATION, properties=PROPERTIES)
+    population = initialize_population(size=SIZE_POPULATION)
 
     for _ in range(NUMBER_GENERATIONS):
         population = next_generation(population)
