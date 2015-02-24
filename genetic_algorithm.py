@@ -23,14 +23,16 @@ Surface s: pi*d^2/2 + pi*d*h
    of the cylinder is minimal.
 
 
-length of genotype:     ceil( log2(31) ) + ceil( log2(31) ) = 5 + 5
-mutate with probabilyt: p = 0.1
-use rank based selection
+Encoded properties h and d build genotype
+length of genotype: ceil( log2(31) ) + ceil( log2(31) ) = 5 + 5
+
+- mutate with probabilyt: p = 0.1
+- use rank based selection
 
 """
 
 from random import randint, random
-from math import ceil, log, pi
+from math import log, pi
 from copy import copy
 
 class CylinderPhenotype:
@@ -63,7 +65,7 @@ class CylinderPhenotype:
     def evaluate(self):
         # surface
         self.fitness    = pi*self.diameter**2/2 + pi*self.diameter*self.height
-        # volume
+        # volume greater than 300
         self.constraint = pi*self.diameter**2*self.height/4 >= 300
         return [self.fitness, self.constraint]
 
@@ -75,7 +77,7 @@ def initialize_population(size):
     population = []
     for _ in range(size):
         population.append(CylinderPhenotype(
-            # Random Genotype
+            # Random Genotype of length 10
             ''.join([str(randint(0,1)) for _ in range(10)])
         ))
 
