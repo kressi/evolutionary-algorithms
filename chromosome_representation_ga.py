@@ -136,12 +136,12 @@ def random_genotype_mutation(genotype, probability=0.1):
     return ''.join(mutation)
 
 def crossover(population):
-    """Copulation
+    """
     Split population in two groups, and mate individuals
     from the first group with individuals from the
     second group, giving two offsprings. They mate only
-    with probability p, unmated individuals will be moved 
-    to the new generation.
+    with probability p. Offsprings will replace their
+    parents.
     """
     return population
 

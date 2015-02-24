@@ -1,11 +1,26 @@
 """
-Chromosome Representation GA
-https://en.wikipedia.org/wiki/Genetic_algorithm#Chromosome_representation
+Determine cylinder with minimal surface and
+volume of at least 300 units.
+===========================================
 
-Genetic algorithms belong to the larger class of evolutionary
-algorithms (EA), which generate solutions to optimization
-problems using techniques inspired by natural evolution,
-such as inheritance, mutation, selection, and crossover.
+Lecture: Comuptatianal Intelligence - ZHAW
+Lecturer: Dr. Carsten Franke
+Topic: Einkriterielle Evoulutionaere Algorithmen
+
+Author: Michael Kressibucher
+
+
+Requirements:
+-------------
+Height of Cylinder h:   0 <= h <= 31
+Diameter of Cylinder d: 0 <= d <= 31
+
+Volume v:  pi*d^2*h/4 >= 300
+Surface s: pi*d^2/2 + pi*d*h
+
+-> Surface should be minimized with using a genetic
+   algorithm (Chromosome Representation GA).
+
 """
 
 from random import randint, random
@@ -16,11 +31,10 @@ class CylinderPhenotype:
     """Individual (phenotype, creature)
     """
 
-    def __init__(self, genotype, sizes=[5,5]):
+    def __init__(self, genotype):
 
         # Genotype (properties, chromosomes)
         self.genotype   = genotype
-        self.sizes      = sizes
         self.diameter   = None
         self.height     = None
         self.fitness    = None
@@ -28,7 +42,7 @@ class CylinderPhenotype:
 
     def __str__(self):
         return ''.join([
-            "Gen: ", self.genotype[:self.sizes[0]], ".", self.genotype[self.sizes[0]:],
+            "Gen: ", self.genotype[:5], ".", self.genotype[5:],
             " H: ", str(self.height),
             "\tD: ", str(self.diameter),
             "\tSurface: ", str(self.fitness),
@@ -55,7 +69,7 @@ def initialize_population(size):
     population = []
     for _ in range(size):
         population.append(CylinderPhenotype(
-            # Random Genome
+            # Random Genotype
             ''.join([str(randint(0,1)) for _ in range(10)])
         ))
 
@@ -79,8 +93,7 @@ def next_generation(population):
 
 def select_phenotypes(population):
     """
-    Rank based selection
-    Stochastic universal sampling
+    Rank based selection (Stochastic universal sampling)
     """
 
     # list, sorted by rank and filtered by constraint
@@ -126,8 +139,7 @@ def mutate(population, probability=0.1):
 
 def random_genotype_mutation(genotype, probability=0.1):
     """
-    Inverts each bit of genotype with
-    probability p.
+    Inverts each bit of genotype with probability p.
     """
     mutation = []
     for bit in genotype:
@@ -138,12 +150,12 @@ def random_genotype_mutation(genotype, probability=0.1):
     return ''.join(mutation)
 
 def crossover(population):
-    """Copulation
+    """
     Split population in two groups, and mate individuals
     from the first group with individuals from the
     second group, giving two offsprings. They mate only
-    with probability p, unmated individuals will be moved 
-    to the new generation.
+    with probability p. Offsprings will replace their
+    parents.
     """
     return population
 
