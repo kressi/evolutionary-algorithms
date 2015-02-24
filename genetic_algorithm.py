@@ -18,8 +18,14 @@ Diameter of Cylinder d: 0 <= d <= 31
 Volume v:  pi*d^2*h/4 >= 300
 Surface s: pi*d^2/2 + pi*d*h
 
--> Surface should be minimized with using a genetic
-   algorithm (Chromosome Representation GA).
+-> By a genetic algorithm, diameter and height
+   have to be determined, such that the surface
+   of the cylinder is minimal.
+
+
+length of genotype:     ceil( log2(31) ) + ceil( log2(31) ) = 5 + 5
+mutate with probabilyt: p = 0.1
+use rank based selection
 
 """
 
