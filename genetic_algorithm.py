@@ -23,16 +23,23 @@ Surface s: pi*d^2/2 + pi*d*h
    of the cylinder is minimal.
 
 
+Genotype:
 Encoded properties h and d build genotype
 length of genotype: ceil( log2(31) ) + ceil( log2(31) ) = 5 + 5
 
-- mutate with probabilyt: p = 0.1
-- use rank based selection
+Champions:
+Best creature of each population, over several
+populaitons.
+
+Compare fitness of populations for mutation probabilities
+0.005, 0.01, 0.02, 0.1, 0.2.
+-> mutation rate of 0.01 seeems to be most reliable for
+   those 100 generations we train.
 
 """
 
 from random import randint, random
-from math import log, pi
+from math import log, pi, floor
 from copy import copy
 
 class CylinderPhenotype:
@@ -86,10 +93,10 @@ def initialize_population(size):
 
     return population
 
-def next_generation(population):
+def next_generation(population, mutation_probability=0.01):
 
     next_generation = select_phenotypes(population)
-    next_generation = mutate(next_generation)
+    next_generation = mutate(next_generation, mutation_probability)
     next_generation = crossover(next_generation)
 
     # Evaluate creatures
@@ -107,7 +114,7 @@ def select_phenotypes(population):
     # list, sorted by rank and filtered by constraint
     sorted_population = sorted( [creature for creature in population if creature.constraint],
                                 key=lambda ind: ind.fitness,
-                                reverse=True )
+                                reverse=False )
 
     # List with boundaries of interval for rank probability
     probability_interval = get_probability_interval(len(sorted_population))
@@ -137,15 +144,12 @@ def get_probability_interval(max_rank):
 
     return interval
 
-def mutate(population, probability=0.1):
-
-    mutants = (creature for creature in population if random() <= probability)
-    for phenotype in mutants:
-        phenotype.genotype = random_genotype_mutation(phenotype.genotype)
-
+def mutate(population, probability):
+    for phenotype in population:
+        phenotype.genotype = random_genotype_mutation(phenotype.genotype, probability)
     return population
 
-def random_genotype_mutation(genotype, probability=0.1):
+def random_genotype_mutation(genotype, probability):
     """
     Inverts each bit of genotype with probability p.
     """
@@ -171,6 +175,17 @@ def singel_point_recombine(gen1, gen2):
     point = randint(0,min(len(gen1),len(gen2)))
     return [gen1[:point]+gen2[point:], gen1[point:]+gen2[:point]]
 
+def get_champion(population):
+
+    fitness  = None
+    champion = None
+    for phenotype in population:
+        if phenotype.constraint and (not fitness or phenotype.fitness < fitness):
+            fitness  = phenotype.fitness
+            champion = phenotype
+
+    return copy(champion)
+
 
 """Encoding and Decoding
 """
@@ -183,21 +198,66 @@ def binary_to_real(bin_string, min=0, step=1):
     return num
 
 
+"""Plot
+"""
+def create_summary(population):
+    """
+    Plot fitness of the best individual of each generation
+    """
+    plot(range(len(population)),[phenotype.fitness for phenotype in population])
+    superchamp = get_champion(population)
+    print(''.join([
+        'Superchamp Diameter: ', str(superchamp.diameter),
+        ' Height: ', str(superchamp.height),
+        ' Surface: ', str(superchamp.fitness)
+    ]))    
+
+def plot(x=[], y=[], size_x=100, size_y=50):
+    """
+    x, y list of values on x- and y-axis.
+    plot those values within canvas size.
+    """
+    # for simplicity, x and y must contain the same number
+    # of elements and must be positive.
+    if len(x) != len(y) or min(x) < 0 or min(y) < 0:
+        print('len(x) != len(y) or some elements are negative')
+
+    # Scale points such that they fit on canvas
+    scale_x = float(size_x-1)/max(x) if x and max(x) != 0 else size_x
+    scale_y = float(size_y-1)/max(y) if y and max(y) != 0 else size_y
+    x_scaled = [int(i * scale_x) for i in x]
+    y_scaled = [int(i * scale_y) for i in y]
+
+    # Create empty canvas
+    canvas = [[' ' for _ in range(size_x)] for _ in range(size_y)]
+
+    # Add scaled points to canvas
+    for ix, iy in zip(x_scaled, y_scaled):
+        canvas[size_y-iy+1][ix] = '*'
+
+    # Print rows of canvas
+    for row in [''.join(row) for row in canvas]:
+        print(row)
+
+    # Print scale
+    print(''.join([ 'Max x: ', str(max(x)), ' Max y: ', str(max(y)), '\n' ]))
+
+
 def main():
 
-    SIZE_POPULATION = 30
-    NUMBER_GENERATIONS = 5
+    SIZE_POPULATION      = 30
+    NUMBER_GENERATIONS   = 100
+    MUTATION_PROBABILITY = 0.01
 
     population = initialize_population(size=SIZE_POPULATION)
+    champions  = []
 
     for _ in range(NUMBER_GENERATIONS):
-        population = next_generation(population)
+        population = next_generation(population, mutation_probability=MUTATION_PROBABILITY)
+        champions.append(get_champion(population))
 
-    # show population
-    for phenotype in population:
-        phenotype.calculate_decimals()
-        phenotype.evaluate()
-        print(phenotype)
+    create_summary(champions)
+
 
 if __name__ == '__main__':
     main()
