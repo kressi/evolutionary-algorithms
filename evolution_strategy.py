@@ -237,7 +237,7 @@ def create_summary(population):
         'Superchamp Diameter: ', str(superchamp.diameter),
         ' Height: ', str(superchamp.height),
         ' Surface: ', str(superchamp.fitness)
-    ]))    
+    ]))
 
 
 def main():
