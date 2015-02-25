@@ -10,8 +10,8 @@ Topic: Einkriterielle Evoulutionaere Algorithmen
 Author: Michael Kressibucher
 
 
-Requirements:
--------------
+Problem
+-------
 Height of Cylinder h:   0 <= h <= 31
 Diameter of Cylinder d: 0 <= d <= 31
 
@@ -23,6 +23,18 @@ Surface s: pi*d^2/2 + pi*d*h
    of the cylinder is minimal.
 
 
+Algorithmen
+-----------
+- Initialization of population
+- Evaluate population
+- Loop until 100 generations
+  - mutate
+  - crossover
+  - evaluate
+
+
+Attributes
+----------
 Genotype:
 Encoded properties h and d build genotype
 length of genotype: ceil( log2(31) ) + ceil( log2(31) ) = 5 + 5
@@ -31,15 +43,17 @@ Champions:
 Best creature of each population, over several
 populaitons.
 
+
 Compare fitness of populations for mutation probabilities
 0.005, 0.01, 0.02, 0.1, 0.2.
 -> mutation rate of 0.01 seeems to be most reliable for
    those 100 generations we train.
+-> crossover does not change much
 
 """
 
-from random import randint, random
-from math import log, pi, floor
+from random import randint, random, shuffle
+from math import log, pi
 from copy import copy
 
 class CylinderPhenotype:
@@ -161,14 +175,27 @@ def random_genotype_mutation(genotype, probability):
 
     return ''.join(mutation)
 
-def crossover(population):
+def crossover(population, breeder_size=10):
     """
-    Split population in two groups, and mate individuals
-    from the first group with individuals from the
-    second group, giving two offsprings. They mate only
-    with probability p. Offsprings will replace their
-    parents.
+    Chose n creatures and mate those, two parents
+    giving birth to two offsprings. Offsprings will
+    replace their parents.
     """
+    offsprings = []
+    shuffle(population)
+    for _ in range(breeder_size/2):
+        # Genotype of mother and father will be
+        # replaced with genotype of offsprings
+        mother = population.pop()
+        father = population.pop()
+        offspring_genotypes = singel_point_recombine(mother.genotype, father.genotype)
+        mother.genotype = offspring_genotypes[0]
+        father.genotype = offspring_genotypes[1]
+        offsprings.append(mother)
+        offsprings.append(father)
+
+    population += offsprings
+
     return population
 
 def singel_point_recombine(gen1, gen2):
