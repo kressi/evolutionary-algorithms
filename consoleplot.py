@@ -1,7 +1,7 @@
 # consoleplot.py
 #---------------
 
-def plot(x=[], y=[], size_x=100, size_y=50):
+def plot(x=[], y=[], size_x=100, size_y=20):
     """
     x, y list of values on x- and y-axis.
     plot those values within canvas size.

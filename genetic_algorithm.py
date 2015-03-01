@@ -183,7 +183,7 @@ def crossover(population, breeder_size=10):
     """
     offsprings = []
     shuffle(population)
-    for _ in range(breeder_size/2):
+    for _ in range(int(breeder_size/2)):
         # Genotype of mother and father will be
         # replaced with genotype of offsprings
         mother = population.pop()
