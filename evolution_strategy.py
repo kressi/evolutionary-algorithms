@@ -1,58 +1,5 @@
-"""
-Determine cylinder with minimal surface and
-volume of at least 300 units.
-===========================================
-
-Lecture: Comuptatianal Intelligence - ZHAW
-Lecturer: Dr. Carsten Franke
-Topic: Einkriterielle Evoulutionaere Algorithmen
-
-Author: Michael Kressibucher
-
-
-Problem
--------
-Height of Cylinder h:   0 <= h <= 31
-Diameter of Cylinder d: 0 <= d <= 31
-
-Volume v:  pi*d^2*h/4 >= 300
-Surface s: pi*d^2/2 + pi*d*h
-
--> By a genetic algorithm, diameter and height
-   have to be determined, such that the surface
-   of the cylinder is minimal.
-
-
-Algorithmen
------------
-- Initialization of population
-- Evaluate population
-- Loop until 100 generations
-  - mutate
-  - crossover
-  - evaluate
-
-
-Attributes
-----------
-Genotype:
-Encoded properties h and d build genotype
-length of genotype: ceil( log2(31) ) + ceil( log2(31) ) = 5 + 5
-
-Champions:
-Best creature of each population, over several
-populaitons.
-
-
-Compare fitness of populations for mutation probabilities
-0.005, 0.01, 0.02, 0.1, 0.2.
--> mutation rate of 0.01 seeems to be most reliable for
-   those 100 generations we train.
-
-"""
-
-from random import randint, random, shuffle
-from math import log, pi
+from random import randint, random, shuffle, gauss
+from math import log, pi, exp, sqrt
 from copy import copy
 from consoleplot import plot
 
@@ -68,14 +15,21 @@ class CylinderPhenotype:
         self.height     = None
         self.fitness    = None
         self.constraint = None
+        
+        # Strategy parameters
+        self.age        = 0
+        self.p_mutation = 0.01
+
 
     def __str__(self):
         return ''.join([
-            "Gen: ", self.genotype[:5], ".", self.genotype[5:],
-            " H: ", str(self.height),
-            "\tD: ", str(self.diameter),
-            "\tSurface: ", str(self.fitness),
-            "\tVolume: ", str(self.constraint)
+            "Gen: ",          self.genotype[:5], ".", self.genotype[5:],
+            " H: ",           str(self.height),
+            "\tD: ",          str(self.diameter),
+            "\tSurface: ",    str(self.fitness),
+            "\tVolume: ",     str(self.constraint),
+            "\tAge: ",        str(self.age),
+            "\tp_mutation: ", str(self.p_mutation)
         ])
 
     def calculate_decimals(self):
@@ -107,26 +61,26 @@ def initialize_population(size):
 
     return population
 
-def next_generation(population, mutation_probability=0.01):
+def next_generation(population):
 
-    next_generation = select_phenotypes(population)
-    next_generation = mutate(next_generation, mutation_probability)
-    next_generation = crossover(next_generation)
+    next_generation = crossover(population)
+    next_generation = select_phenotypes(next_generation)
 
     # Evaluate creatures
     for phenotype in next_generation:
         phenotype.calculate_decimals()
         phenotype.evaluate()
+        phenotype.age += 1
 
     return next_generation
 
-def select_phenotypes(population):
+def select_phenotypes(population, mu=7, kappa=15):
     """
     Rank based selection (Stochastic universal sampling)
     """
 
     # list, sorted by rank and filtered by constraint
-    sorted_population = sorted( [creature for creature in population if creature.constraint],
+    sorted_population = sorted( [creature for creature in population if creature.constraint and creature.age < kappa],
                                 key=lambda ind: ind.fitness,
                                 reverse=False )
 
@@ -134,7 +88,7 @@ def select_phenotypes(population):
     probability_interval = get_probability_interval(len(sorted_population))
 
     selection = []
-    for _ in range(len(population)):
+    for _ in range(mu):
         rand = random()
         for i, sub_interval in enumerate(probability_interval):
             if rand <= sub_interval:
@@ -158,10 +112,26 @@ def get_probability_interval(max_rank):
 
     return interval
 
-def mutate(population, probability):
+def mutate(population):
     for phenotype in population:
-        phenotype.genotype = random_genotype_mutation(phenotype.genotype, probability)
+        phenotype.p_mutation = mutate_strategy(phenotype.p_mutation)
+        phenotype.genotype   = random_genotype_mutation( phenotype.genotype,
+                                                         phenotype.p_mutation )
     return population
+
+def mutate_strategy(sigma):
+    """
+    non-isotropic mutation
+    sigma: mutation strength
+    """
+
+    # number of strategy parameters
+    u = 1
+    # tau: learning rate
+    tau0 = 1/(sqrt(2*u))
+    tau1 = 1/(sqrt(2*sqrt(u)))
+
+    return exp( tau0*gauss(0,1) )*sigma*exp( tau1*gauss(0,1) )
 
 def random_genotype_mutation(genotype, probability):
     """
@@ -175,32 +145,34 @@ def random_genotype_mutation(genotype, probability):
 
     return ''.join(mutation)
 
-def crossover(population, breeder_size=10):
-    """
-    Chose n creatures and mate those, two parents
-    giving birth to two offsprings. Offsprings will
-    replace their parents.
-    """
+def crossover(population, nr_offsprings=49):
+
     offsprings = []
-    shuffle(population)
-    for _ in range(breeder_size/2):
-        # Genotype of mother and father will be
-        # replaced with genotype of offsprings
+    while len(offsprings) < 49:
+        shuffle(population)
+
         mother = population.pop()
         father = population.pop()
-        offspring_genotypes = singel_point_recombine(mother.genotype, father.genotype)
-        mother.genotype = offspring_genotypes[0]
-        father.genotype = offspring_genotypes[1]
-        offsprings.append(mother)
-        offsprings.append(father)
+        third  = population.pop()
 
+        offspring_genotype = three_parent_recombine(mother.genotype, father.genotype, third.genotype)
+        offsprings.append(CylinderPhenotype(offspring_genotype))
+        offsprings[-1].calculate_decimals()
+        offsprings[-1].evaluate()
+
+        population.append(mother)
+        population.append(father)
+        population.append(third)
+
+    offsprings = mutate(offsprings)
     population += offsprings
 
     return population
 
-def singel_point_recombine(gen1, gen2):
-    point = randint(0,min(len(gen1),len(gen2)))
-    return [gen1[:point]+gen2[point:], gen1[point:]+gen2[:point]]
+def three_parent_recombine(gen1, gen2, gen3):
+    p1 = randint(0,min(len(gen1),len(gen2)))
+    p2 = randint(0,min(len(gen1),len(gen2)))
+    return gen1[:min(p1,p2)]+gen2[min(p1,p2):max(p1,p2)]+gen3[max(p1,p2):]
 
 def get_champion(population):
 
@@ -237,20 +209,29 @@ def create_summary(population):
         'Superchamp Diameter: ', str(superchamp.diameter),
         ' Height: ', str(superchamp.height),
         ' Surface: ', str(superchamp.fitness)
-    ]))
+    ]))    
 
 
 def main():
 
-    SIZE_POPULATION      = 30
+    SIZE_POPULATION      = 7
     NUMBER_GENERATIONS   = 100
-    MUTATION_PROBABILITY = 0.01
+
+    # Mutation Strategy Parameter
+    # Size of population
+    #MU     = 7
+    # Maximum age of a phenotype
+    #KAPPA  = 15
+    # Number of offsprings
+    #LAMBDA = 49
+    # Number of parents per offspring
+    #RHO    = 3
 
     population = initialize_population(size=SIZE_POPULATION)
     champions  = []
 
     for _ in range(NUMBER_GENERATIONS):
-        population = next_generation(population, mutation_probability=MUTATION_PROBABILITY)
+        population = next_generation(population)
         champions.append(get_champion(population))
 
     create_summary(champions)

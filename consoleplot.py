@@ -29,4 +29,10 @@ def plot(x=[], y=[], size_x=100, size_y=20):
         print(row)
 
     # Print scale
-    print(''.join([ 'Max x: ', str(max(x)), ' Max y: ', str(max(y)), '\n' ]))
+    print(''.join([
+        'Min x: ',  str(min(x)),
+        ' Max x:',  str(max(x)),
+        ' Min y: ', str(min(y)),
+        ' Max y: ', str(max(y)),
+        '\n'
+    ]))
