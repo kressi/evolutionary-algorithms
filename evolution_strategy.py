@@ -124,14 +124,10 @@ def mutate_strategy(sigma):
     non-isotropic mutation
     sigma: mutation strength
     """
-
-    # number of strategy parameters
-    u = 1
     # tau: learning rate
-    tau0 = 1/(sqrt(2*u))
-    tau1 = 1/(sqrt(2*sqrt(u)))
+    tau = 1/(sqrt(2))
 
-    return exp( tau0*gauss(0,1) )*sigma*exp( tau1*gauss(0,1) )
+    return exp( tau*gauss(0,1) )*sigma
 
 def random_genotype_mutation(genotype, probability):
     """
