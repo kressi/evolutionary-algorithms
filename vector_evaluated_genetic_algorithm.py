@@ -164,17 +164,6 @@ def singel_point_recombine(gen1, gen2):
     point = randint(0,min(len(gen1),len(gen2)))
     return [gen1[:point]+gen2[point:], gen1[point:]+gen2[:point]]
 
-def get_champion(population):
-
-    surface  = None
-    champion = None
-    for phenotype in population:
-        if phenotype.volume and (not surface or phenotype.surface < surface):
-            surface  = phenotype.surface
-            champion = phenotype
-
-    return copy(champion)
-
 
 """Encoding and Decoding
 """
@@ -193,14 +182,7 @@ def create_summary(population):
     """
     Plot fitness of the best individual of each generation
     """
-    plot([phenotype.volume for phenotype in population],[phenotype.surface for phenotype in population])
-    superchamp = get_champion(population)
-    print(''.join([
-        'Superchamp Diameter: ', str(superchamp.diameter),
-        ' Height: ', str(superchamp.height),
-        ' Surface: ', str(superchamp.surface),
-        ' Volume: ', str(superchamp.volume)
-    ]))    
+    plot([phenotype.volume for phenotype in population],[phenotype.surface for phenotype in population])  
 
 
 def main():
@@ -210,11 +192,9 @@ def main():
     MUTATION_PROBABILITY = 0.01
 
     population = initialize_population(size=SIZE_POPULATION)
-    champions  = []
 
     for _ in range(NUMBER_GENERATIONS):
         population = next_generation(population, mutation_probability=MUTATION_PROBABILITY)
-        champions.append(get_champion(population))
 
     create_summary(population)
 
