@@ -1,7 +1,7 @@
 from random import randint, random, shuffle
 from math import log, pi
 from copy import copy
-from consoleplot import plot
+from console import plot
 
 class CylinderPhenotype:
     """Individual (phenotype, creature)

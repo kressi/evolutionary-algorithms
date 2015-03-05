@@ -1,17 +1,16 @@
 # consoleplot.py
 #---------------
-from math import floor
 
-def plot(x=[], y=[]):
+def plot(x=None, y=[]):
     """
     x, y list of values on x- and y-axis.
     plot those values within canvas size.
     """
-    # for simplicity, x and y must contain the same number
-    # of elements and must be positive.
-    if len(x) != len(y) or min(x) < 0 or min(y) < 0:
-        print('len(x) != len(y) or some elements are negative')
-        return
+    if not x:
+        x = range(y)
+
+    if len(x) != len(y):
+        raise AttributeError('x and y do not contain the same number of values')
 
     # Get Terminal size
     [size_x, size_y] = getTerminalSize()
@@ -21,8 +20,8 @@ def plot(x=[], y=[]):
     # Scale points such that they fit on canvas
     scale_x = float(size_x-1)/(max(x)-min(x)) if x and max(x)-min(x) != 0 else size_x
     scale_y = float(size_y-1)/(max(y)-min(y)) if y and max(y)-min(y) != 0 else size_y
-    x_scaled = [floor((i-min(x)) * scale_x) for i in x]
-    y_scaled = [floor((i-min(y)) * scale_y) for i in y]
+    x_scaled = [int((i-min(x)) * scale_x) for i in x]
+    y_scaled = [int((i-min(y)) * scale_y) for i in y]
 
     # Create empty canvas
     canvas = [[' ' for _ in range(size_x)] for _ in range(size_y)]
