@@ -1,3 +1,8 @@
+"""
+Evolution strategies usually are encoded in R^n, binary
+encoding has shown to be inefficient.
+"""
+
 from random import randint, random, shuffle, gauss
 from math import log, pi, exp, sqrt
 from copy import copy
@@ -32,7 +37,7 @@ class CylinderPhenotype:
             "\tp_mutation: ", str(self.p_mutation)
         ])
 
-    def calculate_decimals(self):
+    def decode(self):
         self.diameter = binary_to_real(self.genotype[:5])
         self.height   = binary_to_real(self.genotype[5:])
         return [self.diameter, self.height]
@@ -56,7 +61,7 @@ def initialize_population(size):
             ''.join([str(randint(0,1)) for _ in range(10)])
         ))
 
-        population[-1].calculate_decimals()
+        population[-1].decode()
         population[-1].evaluate()
 
     return population
@@ -68,7 +73,7 @@ def next_generation(population):
 
     # Evaluate creatures
     for phenotype in next_generation:
-        phenotype.calculate_decimals()
+        phenotype.decode()
         phenotype.evaluate()
         phenotype.age += 1
 
@@ -145,21 +150,27 @@ def crossover(population, nr_offsprings=49):
 
     offsprings = []
     while len(offsprings) < 49:
+
+        # randomly select three distinct parents
         shuffle(population)
+        p1 = population.pop()
+        p2 = population.pop()
+        p3 = population.pop()
 
-        mother = population.pop()
-        father = population.pop()
-        third  = population.pop()
+        # Create new genotype
+        offspring_genotype = three_parent_recombine(p1.genotype, p2.genotype, p3.genotype)
 
-        offspring_genotype = three_parent_recombine(mother.genotype, father.genotype, third.genotype)
+        # Create new phenotype from genotype
         offsprings.append(CylinderPhenotype(offspring_genotype))
-        offsprings[-1].calculate_decimals()
+        offsprings[-1].decode()
         offsprings[-1].evaluate()
 
-        population.append(mother)
-        population.append(father)
-        population.append(third)
+        # Put parents back into population
+        population.append(p1)
+        population.append(p2)
+        population.append(p3)
 
+    # Mutate offsprings and append to population
     offsprings = mutate(offsprings)
     population += offsprings
 
