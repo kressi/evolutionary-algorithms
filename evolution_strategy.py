@@ -6,7 +6,7 @@ encoding has shown to be inefficient.
 from random import randint, random, shuffle, gauss
 from math import log, pi, exp, sqrt
 from copy import copy
-from console import plot
+from terminalplot import plot
 
 class CylinderPhenotype:
     """Individual (phenotype, creature)

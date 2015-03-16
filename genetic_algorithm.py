@@ -54,7 +54,7 @@ Compare fitness of populations for mutation probabilities
 from random import randint, random, shuffle
 from math import log, pi
 from copy import copy
-from console import plot
+from terminalplot import plot
 
 class CylinderPhenotype:
     """Individual (phenotype, creature)
