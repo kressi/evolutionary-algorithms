@@ -1,6 +1,40 @@
 """
+Evolution Strategy
+==================
+
 Evolution strategies usually are encoded in R^n, binary
-encoding has shown to be inefficient.
+encoding has shown to be inefficient. Nevertheless,
+this implementation shows how an evolution strategy works.
+
+
+Algorithm
+---------
+- Initialization of population
+- Evaluate population
+- Loop until 100 generations
+  - crossover
+    - three parent recombination
+    - mutate offsprings
+    - mutate strategy parameters of offsprings
+    - add offsprings to population
+  - selection
+
+
+Strategy parameters
+-------------------
+
+Size of population
+MU = 7
+
+Maximum age of a phenotype
+KAPPA = 15
+
+Number of offsprings
+LAMBDA = 49
+
+Number of parents per offspring
+RHO = 3
+
 """
 
 from random import randint, random, shuffle, gauss
@@ -223,16 +257,6 @@ def main():
 
     SIZE_POPULATION      = 7
     NUMBER_GENERATIONS   = 100
-
-    # Mutation Strategy Parameter
-    # Size of population
-    #MU     = 7
-    # Maximum age of a phenotype
-    #KAPPA  = 15
-    # Number of offsprings
-    #LAMBDA = 49
-    # Number of parents per offspring
-    #RHO    = 3
 
     population = initialize_population(size=SIZE_POPULATION)
     champions  = []

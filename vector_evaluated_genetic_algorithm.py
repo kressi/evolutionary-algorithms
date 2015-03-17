@@ -1,3 +1,31 @@
+"""
+Vector Evaluated Genetic Algorithm (VEGA)
+=========================================
+One of the most simple approaches to solve
+multi-criteria optimization. Usually, it
+generates solutions that are close to one fitness
+function only, but not optimal for each
+function.
+
+
+Algorithm
+---------
+- Initialization of population
+- Evaluate population
+- Loop until 100 generations
+  - split population in two parts
+  - each part
+    - selection (one part by best surface, other part by best volume)
+    - mutation
+    - crossover
+  - merge parts
+  - evaluate individuals
+
+
+Non-dominated front is not determined.
+"""
+
+
 from random import randint, random, shuffle
 from math import log, pi
 from copy import copy
@@ -54,7 +82,7 @@ def initialize_population(size):
 
     return population
 
-def next_generation(population, mutation_probability=0.01):
+def next_generation(population, mutation_probability):
 
     shuffle(population)
 
@@ -176,15 +204,6 @@ def binary_to_real(bin_string, min=0, step=1):
     return num
 
 
-"""Plot
-"""
-def create_summary(population):
-    """
-    Plot fitness of the best individual of each generation
-    """
-    plot([phenotype.volume for phenotype in population],[phenotype.surface for phenotype in population])  
-
-
 def main():
 
     SIZE_POPULATION      = 30
@@ -196,7 +215,8 @@ def main():
     for _ in range(NUMBER_GENERATIONS):
         population = next_generation(population, mutation_probability=MUTATION_PROBABILITY)
 
-    create_summary(population)
+    # Create summary: plot volume and surface of individuals
+    plot([phenotype.volume for phenotype in population],[phenotype.surface for phenotype in population])
 
 
 if __name__ == '__main__':

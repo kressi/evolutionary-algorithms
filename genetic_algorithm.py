@@ -1,14 +1,6 @@
 """
-Determine cylinder with minimal surface and
-volume of at least 300 units.
-===========================================
-
-Lecture: Comuptatianal Intelligence - ZHAW
-Lecturer: Dr. Carsten Franke
-Topic: Einkriterielle Evoulutionaere Algorithmen
-
-Author: Michael Kressibucher
-
+Genetic Algorithm
+=================
 
 Problem
 -------

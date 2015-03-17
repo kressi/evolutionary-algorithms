@@ -1,22 +1,33 @@
+Evolution Algorithms
+====================
 
-Process Flow Evolution
-======================
-Initialization
-- Encoding
+Lecture: Comuptatianal Intelligence - ZHAW
+Lecturer: Dr. Carsten Franke
+Topic: i) Einkriterielle Evoulutionäre Algorithmen
+          - Genetic Algorithm
+          - Evolution Strategy
+      ii) Mehrkriterielle Evolutionäre Algorithmen
+          - Vector Evaluated Genetic Algorithm (VEGA)
 
-Evaluation
-- Fitness
 
-Reproduction
-- Recombination
-- Mutation
+Author: Michael Kressibucher
 
-Convergence
-- e.g. Fixed Number of Generations
+
+Problem solved with algorithms
+------------------------------
+Height of Cylinder h:   0 <= h <= 31
+Diameter of Cylinder d: 0 <= d <= 31
+
+Volume v:  pi*d^2*h/4 >= 300
+Surface s: pi*d^2/2 + pi*d*h
+
+-> By a genetic algorithm, diameter and height
+   have to be determined, such that the surface
+   of the cylinder is minimal.
 
 
 Context Parameters
-==================
+------------------
 - Object Properties (Encoding of Problem): o_k
 - Strategy Parameters (Mutation, Recombination, Selection): s_k
 - Fitness: F(o_k)
@@ -36,7 +47,6 @@ Genetic Algorithm
 
 
 Binary Encoding
-===============
+---------------
 Phenotype: Individual, Creatur, Properties ∈ {l, u}^n , l, u: lower and upper bound of interval of n parameters
 Genotype: {0,1}^l, (l: length of binary encoding)
-
