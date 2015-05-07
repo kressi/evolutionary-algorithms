@@ -1,3 +1,4 @@
+# data source: http://www.auslandversicherung.de/entfernungstabelle_schweiz.html
 CITIES = [
 	'Aarau',
 	'Andermatt',
