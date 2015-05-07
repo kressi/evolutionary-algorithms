@@ -1,16 +1,19 @@
-# Evolutionary Algorithms
-
 **Lecture:** Comuptatianal Intelligence - ZHAW  
 **Lecturer:** Dr. Carsten Franke  
-**Topic:**  
-- Einkriterielle Evoulutionäre Algorithmen  
-  - Genetic Algorithm
-  - Evolution Strategy
-- Mehrkriterielle Evolutionäre Algorithmen
-  - Vector Evaluated Genetic Algorithm (VEGA)
+**Topics:**  
+- [Evolutionary Algorithms](https://github.com/kressi/evolutionary-algorithms#evolutionary-algorithms)
+  - Einkriterielle Evoulutionäre Algorithmen  
+    - [Genetic Algorithm](https://github.com/kressi/evolutionary-algorithms#genetic-algorithm)
+    - Evolution Strategy
+  - Mehrkriterielle Evolutionäre Algorithmen
+    - Vector Evaluated Genetic Algorithm (VEGA)
+- Metaheuristic  
+  - Simulated Annealing
 
 **Author:** Michael Kressibucher
 
+
+# Evolutionary Algorithms
 
 ## Problem solved with algorithms
 Height of Cylinder h:   0 ≤ h ≤ 31  
