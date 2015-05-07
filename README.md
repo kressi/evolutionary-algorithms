@@ -1,4 +1,4 @@
-# Evolution Algorithms
+# Evolutionary Algorithms
 
 **Lecture:** Comuptatianal Intelligence - ZHAW  
 **Lecturer:** Dr. Carsten Franke  
