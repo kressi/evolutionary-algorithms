@@ -1,4 +1,6 @@
-**Lecture:** Comuptatianal Intelligence - ZHAW  
+# Computational Intelligence
+
+**Lecture:** Computational Intelligence - ZHAW  
 **Lecturer:** Dr. Carsten Franke  
 **Algorithms:**  
 - [Evolutionary Algorithms](https://github.com/kressi/evolutionary-algorithms#evolutionary-algorithms)
@@ -13,9 +15,9 @@
 **Author:** Michael Kressibucher
 
 
-# Evolutionary Algorithms
+## Evolutionary Algorithms
 
-## Problem solved with algorithms
+### Problem solved with algorithms
 Height of Cylinder h:   0 ≤ h ≤ 31  
 Diameter of Cylinder d: 0 ≤ d ≤ 31  
 
@@ -25,7 +27,7 @@ Surface S: ![π * d² / 2 + π * d *h](http://mathurl.com/mrsqgnw.png)
 By a genetic algorithm, diameter and height have to be determined, such that the surface of the cylinder is minimal.
 
 
-## Context Parameters
+### Context Parameters
 - Object Properties (Encoding of Problem): ![o_k](http://mathurl.com/l2pxyl8.png)
 - Strategy Parameters (Mutation, Recombination, Selection): ![s_k](http://mathurl.com/mrt835g.png)
 - Fitness: ![F(o_k)](http://mathurl.com/p45qp4l.png)
@@ -35,12 +37,12 @@ By a genetic algorithm, diameter and height have to be determined, such that the
 - Max Number of Generations an Individual lives: κ
 - k: index of individual
 
-## Genetic Algorithm
+### Genetic Algorithm
 - Individuals ![a_k = (o_k, F(o_k))](http://mathurl.com/mxxd7aq.png)
 - μ = λ
 - κ = 1
 - ![s_k](http://mathurl.com/mrt835g.png) constant
 
-## Binary Encoding
+### Binary Encoding
 **Phenotype:** Individual, Creatur, Properties ![∈ {l, u}^n](http://mathurl.com/mx3yovt.png) , l, u: lower and upper bound of interval of n parameters  
 **Genotype:** ![{0,1}^l](http://mathurl.com/nzs2mrm.png), (l: length of binary encoding)
