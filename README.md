@@ -1,6 +1,6 @@
 **Lecture:** Comuptatianal Intelligence - ZHAW  
 **Lecturer:** Dr. Carsten Franke  
-**Topics:**  
+**Algorithms:**  
 - [Evolutionary Algorithms](https://github.com/kressi/evolutionary-algorithms#evolutionary-algorithms)
   - Einkriterielle Evoulutionäre Algorithmen  
     - [Genetic Algorithm](https://github.com/kressi/evolutionary-algorithms#genetic-algorithm)
