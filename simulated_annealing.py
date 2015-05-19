@@ -55,26 +55,23 @@ from simulated_annealing_data import path_length as length
 from simulated_annealing_data import path_print
 
 
-BOLTZMANN = 1.3808 * 10 ** (-23)
+#BOLTZMANN = 1.3808 * 10 ** (-23)
+BOLTZMANN = 1
 
 def metropolis(E1, E0, T):
 	"""Metropolis Verteilung
 	"""
 	return exp((E0 - E1) / (T * BOLTZMANN)) if E0 < E1 else 1
 
-def two_opt(p1):
-
-	p2 = copy(p1)
-	
+def two_opt(path0):
+	path1 = copy(path0)
 	# generate non-neighbouring permutation
 	x = True
 	while x:
 		p = sample(range(len(p2)), 4)
 		x = abs(p[0]-p[1]) == 1 or abs(p[2]-p[3]) == 1
-
-	p2[p[0]], p2[p[1]] = p2[p[1]], p2[p[0]]
-	p2[p[2]], p2[p[3]] = p2[p[3]], p2[p[2]]
-
+	path1[p[0]], p2[p[1]] = path1[p[1]], p2[p[0]]
+	path1[p[2]], p2[p[3]] = path1[p[3]], p2[p[2]]
 	return p2
 
 
@@ -88,21 +85,17 @@ shortest_len = path_len
 T = 3000
 
 for _ in range(200):
-
 	for _ in range(2000):
-		
 		path_new     = two_opt(path)
 		path_new_len = length(path_new)
 
 		if path_new_len < path_len \
 		or metropolis(path_len, path_new_len, T) < random():
-
 			path     = path_new
 			path_len = path_new_len
 			if path_len < shortest_len:
 				shortest_len = path_len
 				shortest     = path
-
 	T = 0.8 * T
 
 # show result
