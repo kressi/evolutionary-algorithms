@@ -2,18 +2,45 @@
 
 **Lecture:** Computational Intelligence - ZHAW  
 **Lecturer:** Dr. Carsten Franke  
+**Author of Algorithms:** Michael Kressibucher  
+
 **Algorithms:**  
 - [Evolutionary Algorithms](https://github.com/kressi/evolutionary-algorithms#evolutionary-algorithms)
   - Einkriterielle Evoulutionäre Algorithmen  
-    - [Genetic Algorithm](https://github.com/kressi/evolutionary-algorithms#genetic-algorithm)
+    - [Genetic Algorithm](https://github.com/kressi/evolutionary-algorithms#genetic-algorithm)  
     - Evolution Strategy
   - Mehrkriterielle Evolutionäre Algorithmen
     - Vector Evaluated Genetic Algorithm (VEGA)
 - Metaheuristic  
-  - Simulated Annealing
+  - Simulated Annealing  
 
-**Author:** Michael Kressibucher
+## API
+### Install Requirements
+Terminalplot is required for all but simulated_annealing. It plots simple graphs within command line.
 
+```zsh
+pip install -r requirements.txt
+```
+
+or
+
+```zsh
+pip install terminalplot
+```
+
+
+### Execute Scripts
+Parameters of scripts can be changed in main function within a script. Scripts then are executed in command line with python.
+
+```sh
+python evolution_strategy.py
+
+python genetic_algorithm.py
+
+python vector_evaluated_genetic_algorithm.py
+
+python simulated_annealing.py
+```
 
 ## Evolutionary Algorithms
 
