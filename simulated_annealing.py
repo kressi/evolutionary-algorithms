@@ -75,30 +75,39 @@ def two_opt(path0):
 	return p2
 
 
-# initial solution
-path = [i for i in range(len(data.CITIES))]
-path_len     = length(path)
-shortest     = path
-shortest_len = path_len
+def main():
 
-# initial temperature
-T = 3000
+	# initial solution
+	path = [i for i in range(len(data.CITIES))]
+	path_len     = length(path)
+	shortest     = path
+	shortest_len = path_len
+	
+	# initial temperature
+	T = 3000
+	
+	# annealing
+	for _ in range(200):
+		# search for solutions at constant temperature
+		for _ in range(200):
+			path_new     = two_opt(path)
+			path_new_len = length(path_new)
+			# continue with new path in case it is shorter
+			# or with metropolis likelihood, depending on temperature
+			# -> high temperature is more likely to take new path
+			if path_new_len < path_len \
+			or metropolis(path_len, path_new_len, T) < random():
+				path     = path_new
+				path_len = path_new_len
+				if path_len < shortest_len:
+					shortest_len = path_len
+					shortest     = path
+		# decrease temperature
+		T = 0.8 * T
+	
+	# show result
+	path_print(shortest)
+	print('\nDistance: ', shortest_len)
 
-for _ in range(200):
-	for _ in range(2000):
-		path_new     = two_opt(path)
-		path_new_len = length(path_new)
-
-		if path_new_len < path_len \
-		or metropolis(path_len, path_new_len, T) < random():
-			path     = path_new
-			path_len = path_new_len
-			if path_len < shortest_len:
-				shortest_len = path_len
-				shortest     = path
-	T = 0.8 * T
-
-# show result
-path_print(shortest)
-print('\nDistance: ', shortest_len)
-
+if __name__ == '__main__':
+	main()
