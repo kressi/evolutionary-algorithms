@@ -16,7 +16,7 @@
 
 ## API
 ### Install Requirements
-Terminalplot is required for all but simulated_annealing. It plots simple graphs within command line.
+Terminalplot is required for all but simulated_annealing.py. It plots simple graphs within command line.
 
 ```zsh
 pip install -r requirements.txt
@@ -30,7 +30,7 @@ pip install terminalplot
 
 
 ### Execute Scripts
-Parameters of scripts can be changed in main function within a script. Scripts then are executed in command line with python.
+Parameters of scripts can be changed in main function inside a script. Scripts then are executed in command line with python.
 
 ```sh
 python evolution_strategy.py
